@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiyou.dao.SpeakerDao">
+<cache type="com.zhiyou.redis.RedisCache"></cache> 
+	<resultMap type="speaker" id="speakerMap">
+		<id column="id" property="id" />
+		<result column="speaker_name" property="speakerName" />
+		<result column="speaker_desc" property="speakerDesc" />
+		<result column="speaker_job" property="speakerJob" />
+		<result column="pic_url" property="picUrl" />
+	</resultMap>
+	<!-- 查全部 -->
+	<select id="select" resultMap="speakerMap">
+		select * from speaker
+	</select>
+	<!-- 增加 -->
+	<insert id="add" parameterType="speaker">
+		insert into speaker
+		values(null,#{speakerName},#{speakerDesc},#{speakerJob},#{picUrl})
+	</insert>
+	<!-- 删除 -->
+	<delete id="delete" parameterType="int">
+		delete from speaker where
+		id=#{id};
+	</delete>
+	<!-- 批量删除 -->
+	<delete id="deleteAll">
+		delete from speaker where id in
+		<foreach collection="array" item="id" separator="," open="("
+			close=")">
+			#{id}
+	</foreach>
+		
+	</delete>
+	<!-- 回显 -->
+		<select id="selectById" resultMap="speakerMap">
+		select*from speaker where id=#{id}
+	</select>
+	<!-- 更改 -->
+	<update id="update">
+		update speaker set speaker_name=#{speakerName},speaker_desc=#{speakerDesc},speaker_job=#{speakerJob},pic_url=#{picUrl}
+		where id=#{id}
+		</update>
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiyou.dao.UserDao">
+<cache type="com.zhiyou.redis.RedisCache"></cache>
+	<!-- 添加 -->
+	<insert id="add" parameterType="user">
+		insert into user values(#{id},#{accounts},#{phone},#{password},#{nickname},#{sex}
+		,#{birthday},#{address},#{imgurl},current_timestamp())
+	</insert>
+	
+	<!-- 删除 -->
+	<delete id="delete" parameterType="int">
+		delete from user where id=#{id};
+	</delete>
+	
+	<!-- 批量删除 -->
+<!-- 	<delete id="deleteAll">
+		delete from user where id in
+		<foreach collection="array" item="id" separator="," open="(" close=")"></foreach>
+			#{id}
+	</delete> -->
+	
+	<!-- 更改 -->
+	<update id="update" parameterType="user">
+		update user set nickname=#{nickname},sex=#{sex}
+		,birthday=#{birthday},address=#{address}
+		where id=#{id}
+	</update>
+	<!-- 更改头像路径 -->
+	<update id="updateImgUrl">
+		update user set imgurl=#{imgurl} where id=#{id}
+	</update>
+	<!-- 查全部 -->
+	<select id="select" resultType="user">
+		select * from user
+	</select>
+	
+	<!-- 判断账号密码 -->
+	<select id="selectByName" resultType="user">
+		select * from user where accounts=#{accounts} and password=#{password}
+	</select>
+	
+	<!-- 回显 -->
+	<select id="selectById" resultType="user">
+		select * from user where id=#{id}
+	
+	</select>
+	<!-- 更改密码 -->
+	<update id="update1">
+		update user set password=#{password}
+		where id=#{id}
+	</update>
+	<!-- 查询账号 -->
+		<select id="selectByAccounts" resultType="user">
+		select * from user where accounts=#{accounts}
+	</select>
+	
+</mapper>

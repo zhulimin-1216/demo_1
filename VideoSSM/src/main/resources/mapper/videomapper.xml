@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiyou.dao.VideoDao">
+<cache type="com.zhiyou.redis.RedisCache"></cache>
+	<!-- 解析 结果集 -->
+	<resultMap type="video" id="videoMap">
+		<id column="video_id" property="videoId" />
+		<result column="title" property="title" />
+		<result column="detail" property="detail" />
+		<result column="time" property="time" />
+		<result column="speaker_id" property="speakerId" />
+		<result column="course_id" property="courseId" />
+		<result column="video_url" property="videoUrl" />
+		<result column="image_url" property="imageUrl" />
+		<result column="play_num" property="playNum" />
+		<association property="course" javaType="com.zhiyou.model.Course">
+			<id column="id" property="id" />
+			<result column="course_title" property="courseTitle" />
+			<result column="course_desc" property="courseDesc" />
+			<result column="subject_id" property="subjectId" />
+		</association>
+		<association property="speaker" javaType="com.zhiyou.model.Speaker">
+			<id column="id" property="id" />
+			<result column="speaker_name" property="speakerName" />
+			<result column="speaker_desc" property="speakerDesc" />
+			<result column="speaker_job" property="speakerJob" />
+			<result column="pic_url" property="picUrl"/>
+		</association>
+	</resultMap>
+
+	<!-- 查询全部 -->
+	<select id="select" resultMap="videoMap">
+		<!-- select * from video  -->
+		select *from video v left join course c on v.course_id= c.id left join speaker s on
+		v.speaker_id=s.id
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="v.title!=null">
+				<bind name="title" value="'%'+v.title+'%'" />
+				 title like #{title}
+			</if>
+			<if test="v.speakerId!=null">
+				<if test="v.speakerId!=0">
+					<bind name="speakerId" value="'%'+v.speakerId+'%'" />
+					and speaker_id like #{speakerId}
+				</if>
+			</if>
+			<if test="v.courseId!=null">
+				<if test="v.courseId!=0">
+					<bind name="courseId" value="'%'+v.courseId+'%'" />
+					and course_id like #{courseId}
+				</if>
+			</if>
+		</trim>
+	</select>
+	
+		<!-- 使用动态sql写一个可以用于所有写的模糊查询语句 -->
+	<!-- <select id="selectLike" resultMap="videoMap">
+		select* from video where name like concat('%',#{name},'%')
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="speakerId!=null">
+				<bind name="speakerId" value="'%'+speakerId+'%'" />
+				or speaker_id like #{speakerId}
+			</if>
+			<if test="courseId!=null">
+				<bind name="courseId" value="'%'+courseId+'%'" />
+				or course_id like #{courseId}
+			</if>
+		</trim>
+	</select> -->
+
+	<!-- 增加 -->
+	<insert id="add" parameterType="video">
+		insert into video
+		values(null,#{title},#{detail},#{time},
+		#{speakerId},#{courseId},#{videoUrl},#{imageUrl},#{playNum})
+	</insert>
+	<!-- 删除 -->
+	<delete id="delete" parameterType="int">
+		delete from video
+		where
+		video_id=#{videoId}
+	</delete>
+
+	<!-- 批量删除 -->
+	<delete id="deleteAll">
+		delete from video where video_id in
+		<foreach collection="array" item="id" separator="," open="("
+			close=")">
+			#{id}
+		</foreach>
+	</delete>
+	<!-- 回显 -->
+	<select id="selectById" resultMap="videoMap">
+		select * from video v ,course
+		c,speaker s where v.course_id= c.id and
+		v.speaker_id=s.id and video_id=#{videoId}
+	</select>
+	<!-- 更改 -->
+	<update id="update">
+		update video set
+		title=#{title},detail=#{detail},time=#{time},
+		speaker_id=#{speakerId},course_id=#{courseId},video_url=#{videoUrl},image_url=#{imageUrl},play_num=#{playNum}
+		where video_id=#{videoId}
+	</update>
+	<update id="addPlayNum">
+		update video set
+		play_num=play_num+1
+		where video_id=#{id}
+	</update>
+</mapper>

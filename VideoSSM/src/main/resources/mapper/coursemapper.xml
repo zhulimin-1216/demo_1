@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiyou.dao.CourseDao">
+<cache type="com.zhiyou.redis.RedisCache" />
+
+	<resultMap type="course" id="courseMap">
+		<id column="id" property="id" />
+		<result column="course_title" property="courseTitle" />
+		<result column="course_desc" property="courseDesc" />
+		<result column="subject_id" property="subjectId" />
+		<association property="subject" javaType="subject">
+			<id column="subject_id" property="subjectId" />
+			<result column="subject_name" property="subjectName" />
+		</association>
+		<collection property="videoss" ofType="video">
+			<id column="video_id" property="videoId" />
+			<result column="title" property="title" />
+			<result column="detail" property="detail" />
+			<result column="time" property="time" />
+			<result column="speaker_id" property="speakerId" />
+			<result column="course_id" property="courseId" />
+			<result column="video_url" property="videoUrl" />
+			<result column="image_url" property="imageUrl" />
+			<result column="play_num" property="playNum" />
+		</collection>
+	</resultMap>
+
+	
+	<select id="select" resultType="course">
+		select * from course
+	</select>
+
+	<!-- 查询subject的id -->
+	<select id="selectBySubjectId" resultMap="courseMap">
+		select * from course c left join
+		video v on v.course_id=c.id left join subject s on s.subject_id=c.subject_id where c.subject_id=#{subject_id}
+	</select>
+	<!-- 增加 -->
+	<insert id="add" parameterType="course">
+		insert into course
+		values(null,#{courseTitle},#{courseDesc},#{subjectId})
+	</insert>
+	<!-- 删除 -->
+	<delete id="delete" parameterType="int">
+		delete from course where
+		id=#{id};
+	</delete>
+	<!-- 批量删除 -->
+	<delete id="deleteAll">
+		delete from course where id in
+		<foreach collection="array" item="id" separator="," open="("
+			close=")">
+			#{id}
+		</foreach>
+
+	</delete>
+	<!-- 回显 -->
+	<select id="selectById" resultMap="courseMap">
+		<!-- select*from course where id=#{id} -->
+		select v.*,c.id cid,c.course_title,c.course_desc,c.subject_id from
+		course c left join video v on v.course_id=c.id
+		where c.id=#{id}
+	</select>
+	<!-- 更改 -->
+	<update id="update">
+		update course set
+		course_title=#{courseTitle},course_desc=#{courseDesc},subject_id=#{subjectId}
+		where id=#{id}
+	</update>
+</mapper>

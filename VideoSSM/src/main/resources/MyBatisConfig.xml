@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+	<!-- 设置mybatis -->
+	<settings>
+		<setting name="lazyLoadingEnabled" value="true" />
+		<!-- 开启二级缓存 -->
+		<setting name="cacheEnabled" value="true" />
+	</settings>
+	<!-- 指定类型别名 -->
+	<typeAliases>
+		<!-- user 就代表com.zhiyou.model.User -->
+		<typeAlias type="com.zhiyou.model.User" alias="user"/>
+		<typeAlias type="com.zhiyou.model.Course" alias="course"/>
+		<typeAlias type="com.zhiyou.model.Speaker" alias="speaker"/>
+		<typeAlias type="com.zhiyou.model.Video" alias="video"/>
+		<typeAlias type="com.zhiyou.model.Subject" alias="subject"/>
+		
+	</typeAliases>
+
+	<!-- 分页插件 -->
+	<plugins>
+		<plugin interceptor="com.github.pagehelper.PageInterceptor"></plugin>
+	</plugins>
+</configuration>

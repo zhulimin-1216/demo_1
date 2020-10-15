@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiyou.dao.SubjectDao">
+<cache type="com.zhiyou.redis.RedisCache"></cache>
+
+	<select id="selectAll" resultMap="subjectMap">
+		select * from subject 
+	</select>
+	<!-- 返回结果集 -->
+	<resultMap type="com.zhiyou.model.Subject" id="subjectMap">
+		<id property="subjectId" column="subject_id"/>
+		<result property="subjectName" column="subject_name"/>
+	</resultMap>
+	
+	<select id="selectById" resultType="subject">
+		select * from subject where id=#{id}
+	</select> 
+</mapper>
